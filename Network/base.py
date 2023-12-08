@@ -1,6 +1,5 @@
 import torch
 import numpy as np
-print(torch.__version__)
 
 # 定义自己的输出格式
 def my_print(description: str, x):
@@ -56,7 +55,7 @@ def test_gpu_tensor_with_cpu_nparray():
 # 以下代码展示了torch如何执行自动求导。
 def test_autograd():
     my_print('test_autograd', None)
-    # 创建一个需要求导的张量，并设置requires_grad=True
+    # 创建一个需要求导的标量，并设置requires_grad=True
     x = torch.tensor(2.0, requires_grad=True)
 
     # 定义一个计算图（函数），先有函数再有导数
@@ -75,9 +74,33 @@ def test_autograd():
 
     # 再次使用backward()方法计算导数
     x.grad.zero_()  # 清零之前的导数值，如果不清零就是累加
-    
+
     y.backward()
     my_print('Gradient (2nd backward):', x.grad)
+
+def test_vector_grad():
+    my_print('test_vector_grad', None)
+    # 创建一个需要求导的张量，并设置requires_grad=True
+    x = torch.ones(2, requires_grad=True)
+
+    # 定义一个计算图（函数），先有函数再有导数
+    y = x**2 + 3*x + 1
+
+    # 使用backward()方法计算导数，但需要添加权重值
+    y.backward(torch.ones_like(y), retain_graph=True)
+
+    # 用不同大小的值添加权重进行求和，此时第二个分量的grad计算出来就比较大
+    # 注意这里就必须用tensor，不能用np.array和list
+    # 注意这里属于第二次调用计算图，需要保留计算图，最后一次调用要删去
+    y.backward(torch.tensor([1, 2]), retain_graph=False)
+
+    # grad的维度和张量的维度是一致的
+
+    # 访问导数值，导数值保留在自变量上
+    gradient = x.grad
+
+    my_print('Vector Gradient:', gradient)
+
 
 def main():
     x, y = np.ones(10), np.ones(10)
@@ -92,6 +115,8 @@ def main():
     test_gpu_tensor_with_cpu_nparray()
 
     test_autograd()
+
+    test_vector_grad()
     
 if __name__ == '__main__':
     main()
