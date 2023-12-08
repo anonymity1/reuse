@@ -8,6 +8,8 @@ import torch.nn.functional as F
 
 from base import my_print
 
+import torch.optim as optim
+
 class Net(nn.Module):
     """
     继承torch.nn.Module，在最简单的神经网络中，我们只考虑卷积层和全连接层
@@ -72,9 +74,23 @@ def init_weights(module: nn.Module):
         nn.init.zeros_(module.weight)
         nn.init.zeros_(module.bias)
 
+# 定义loss函数的形式
 def criterion(out: torch.tensor, y: torch.tensor):
+    # MSELoss是二范数
     loss = nn.MSELoss()
     return loss(out, y)
+
+# 定义优化方法：需要输入待优化参数，及一些超参
+# **kwargs传参表示传入字典，可以用任意参数
+def net_optimizer(net: nn.Module, **kwargs):
+
+    # 找字典中的lr，momentum
+    lr = kwargs.get('lr', 0.001)
+    momentum = kwargs.get('momentum', 0.9)
+
+    # 这里用SGD作为优化算法
+    optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum)
+    return optimizer
 
 def main():
 
@@ -93,8 +109,19 @@ def main():
     # 根据预先定义好的loss表达式算出loss在当前样本的值
     loss = criterion(out, y)
 
-    # 计算此时的梯度，（利用该梯度更新参数值）
+    check_params(net)
+
+    # 定义优化方法和针对的参数
+    optimizer = net_optimizer(net)
+
+    # 首先清零参数中的梯度
+    optimizer.zero_grad()
+
+    # 计算此时的梯度，（后续利用该梯度更新参数值）
     loss.backward()
+
+    # 用定义好的优化方法更新net中的参数
+    optimizer.step()
 
     check_params(net)
 
