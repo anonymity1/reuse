@@ -1,1 +1,4 @@
 __pycache__/
+Dataset/MNIST
+images/
+GAN/
