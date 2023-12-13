@@ -1,4 +1,7 @@
 __pycache__/
 Dataset/MNIST
 images/
+Dataset/tk-400
+Testdata/
+Test/
 GAN/
