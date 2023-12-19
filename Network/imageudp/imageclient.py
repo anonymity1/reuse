@@ -130,13 +130,13 @@ def upload_request(req_file, req_type='img-obj', SLO=30):
         't': timestamp,
         # 根据req_file获得
         'n': num_of_packs,
-        # 这两个信息依赖输入的req_type和SLO
+        # 这两个信息依赖输入的req_type和SLO，第一个包的特有信息
         's': req_type,
         'l': SLO
     }
     my_print('first_frame_info', first_frame_info)
     first_frame_info = pickle.dumps(first_frame_info)
-    my_print('first_frame_info', len(first_frame_info))
+    my_print('first_frame_length', len(first_frame_info))
     # 发送第一帧数据
     # 这个方法没有返回值，但可能有异常，异常需要在服务端查看
     sock.sendto(first_frame_info, (host, port))
