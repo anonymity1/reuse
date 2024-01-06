@@ -96,7 +96,8 @@ def main():
 
     net = Net()
 
-    # apply函数递归遍历子模块，用其参数中的函数对所有子模块进行操作
+    # nn.Module中的apply函数传入函数名，递归遍历子模块，
+    # 用其参数中的函数对所有子模块进行操作
     # net.apply(init_weights)
 
     # 测试输入和输出
@@ -121,6 +122,9 @@ def main():
     loss.backward()
 
     # 用定义好的优化方法更新net中的参数
+    # 注意优化器在执行step这个函数的时候，
+    # 需要已经计算出其net的参数中对应的梯度才可以执行。
+    # 也就是说当loss发生变化时，net中的梯度也会发生变化。
     optimizer.step()
 
     check_params(net)

@@ -111,6 +111,8 @@ def data_provider(images_file, labels_file, flag, **kwargs):
     dataset = MNISTDataset(images_file, labels_file)
 
     # 其次转化为可迭代对象，根据用途设定不同的batch，混合选项和最后batch丢弃选项
+    # DataLoader是data_utils中的函数，将内存中的数据转化为可迭代对象，
+    # 有batchsize，shuffle，drop_last等参数
     data_loader = DataLoader(
         dataset, 
         batch_size=batch_size, 
